@@ -1,30 +1,18 @@
-#include <stdio.h>
+#include "standing_controller.h"
 #include <stdlib.h>
-#include <gtk/gtk.h>
 
-static void enter_callback( GtkWidget *widget,GtkWidget *entry )
-{
-  const gchar *entry_text;
-  entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
-  printf ("Entry contents: %s\n", entry_text);
-}
+struct list* list;
 void EntryTextBox(GtkWidget* window)
 {
-    GtkWidget* entry;
-    GtkWidget* box;
-    gint tmp_pos;
-    box=gtk_box_new(FALSE,0);
-    gtk_container_add(GTK_CONTAINER(window),box);
-    gtk_widget_show(box);
-    entry = gtk_entry_new ();
-    gtk_entry_set_max_length (GTK_ENTRY (entry), 50);
-    g_signal_connect (entry, "activate",G_CALLBACK (enter_callback),entry);
-    gtk_entry_set_text (GTK_ENTRY (entry), "hello");
-    tmp_pos = gtk_entry_get_text_length(GTK_ENTRY(entry));
-    gtk_editable_insert_text (GTK_EDITABLE (entry), " world", -1, &tmp_pos);
-    gtk_editable_select_region (GTK_EDITABLE (entry),0, gtk_entry_get_text_length(GTK_ENTRY(entry)));
-    gtk_box_pack_start (GTK_BOX (box), entry, TRUE, TRUE, 0);
-    gtk_widget_show (entry);
+    GtkWidget* grid;
+    grid=gtk_grid_new();
+    struct stand new=Make_New_Stand();
+    gtk_grid_attach(GTK_GRID(grid),new.textentry[0],0,0,1,1);
+    gtk_grid_attach(GTK_GRID(grid),new.textentry[1],0,1,1,1);
+    gtk_container_add(GTK_CONTAINER(window),grid);
+    gtk_widget_show(new.textentry[0]);
+    gtk_widget_show(new.textentry[1]);
+    gtk_widget_show(grid);
 }
 void MakeWindow()
 {
@@ -40,7 +28,6 @@ void MakeWindow()
 
 int main(int argc,char* argv[])
 {
-   
     gtk_init(&argc,&argv);
     MakeWindow();
     gtk_main();

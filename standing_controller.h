@@ -7,8 +7,8 @@
 
 struct stand
 {
-    char nazwa[256];
-    char value[256];
+    char* nazwa;
+    char* value;
     GtkWidget* textentry[2];
 };
 struct list
@@ -16,8 +16,8 @@ struct list
     struct stand stand;
     struct list* next;
 };
-void Enter_Callback_Name( GtkWidget*,gpointer);
-void Enter_Callback_Value( GtkWidget*,gpointer);
+void Enter_Callback_Name( GtkWidget*,GtkWidget*);
+void Enter_Callback_Value( GtkWidget*,GtkWidget*);
 struct stand  Make_New_Stand();
 void Add(struct list*,struct stand);
 #endif
