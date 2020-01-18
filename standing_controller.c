@@ -1,22 +1,7 @@
-#include <stdio.h>
-#include <string.h>
-#include <gtk/gtk.h>
-
+#include "standing_controller.h"
 //do h
-struct stand
-{
-    char nazwa[256];
-    char value[256];
-    GtkWidget* textentry[2];
-};
-struct list
-{
-    struct stand stand;
-    struct list* next;
-};
-struct lista* lista;
 
-static void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
+void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
 {
   struct stand* wsk=entry;
   const gchar *entry_text;
@@ -24,7 +9,7 @@ static void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
   strcpy(wsk->nazwa,entry_text);
   printf ("Entry contents: %s\n", entry_text);
 }
-static void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
+void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
 {
   struct stand* wsk=entry;
   const gchar* entry_text;
@@ -43,27 +28,26 @@ struct stand  Make_New_Stand()
     g_signal_connect (new.textentry[1], "activate",G_CALLBACK (Enter_Callback_Value),&new);
     gtk_editable_select_region (GTK_EDITABLE (new.textentry[0]),0, gtk_entry_get_text_length(GTK_ENTRY(new.textentry[0])));
     gtk_editable_select_region (GTK_EDITABLE (new.textentry[1]),0, gtk_entry_get_text_length(GTK_ENTRY(new.textentry[1])));
-    return stand;
+    gtk_widget_show(new.textentry[0]);
+    gtk_widget_show(new.textentry[1]);
+    return new;
 }
-void Add(struct list* list)
+void Add(struct list* list,struct stand new_stand)
 {
     if(list==NULL)
     {
-        list->stand=Make_New_Stand();
+        struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
+        new_list->stand=new_stand;
+        new_list->next=NULL;
+        list=new_list;
     }else
     {
         while(list->next!=NULL)
         {
             list=list->next;
         }
-        struct stand new_stand=Make_New_Stand();
-        struct lista* new_list=(struct list*)calloc(1,sizeof(struct list));
+        struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
         new_list->stand=new_stand;
         new_list->next=NULL;
     }
-}
-int main()
-{
-
-    return 0;
 }
