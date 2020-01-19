@@ -38,13 +38,15 @@ void Add(struct list* list,struct stand* new_stand)
         list=new_list;
     }else
     {
-        while(list->next!=NULL)
+        struct list* wsk=list;
+        while(wsk->next!=NULL)
         {
-            list=list->next;
+            wsk=wsk->next;
         }
         struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
         new_list->stand=new_stand;
         new_list->next=NULL;
-        new_list->number=list->number+1;
+        new_list->number=wsk->number+1;
+        wsk->next=new_list;
     }
 }
