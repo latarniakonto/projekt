@@ -39,8 +39,11 @@ void Make_Buttons(GtkWidget* grid)
 void Make_Window()
 {
     GtkWidget* window;
+    GtkWidget* scrolled_window;
     GtkWidget* grid;
     grid=gtk_grid_new();
+    scrolled_window=gtk_scrolled_window_new(NULL,NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
     window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window),"Expensometer");
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
@@ -49,7 +52,8 @@ void Make_Window()
     
     Make_Buttons(grid);
     
-    gtk_container_add(GTK_CONTAINER(window),grid);
+    gtk_container_add(GTK_CONTAINER(scrolled_window),grid);
+    gtk_container_add(GTK_CONTAINER(window),scrolled_window);
     gtk_widget_show_all(window);
 }
 
