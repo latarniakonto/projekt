@@ -1,30 +1,30 @@
 #include "standing_controller.h"
 #include <stdlib.h>
 
-struct list* list;
-int Current_Row(struct list* list)
-{
-    struct list* wsk=list;
-    while(wsk->next!=NULL)
-    {
-        wsk=wsk->next;
-    }
-    return wsk->number;
-}
+struct month* months;
 void Add_Text_Entry(GtkWidget* grid)
 {
-    struct stand* new=Make_New_Stand();
-    gtk_grid_attach(GTK_GRID(grid),new->textentry[0],1,Current_Row(list),1,1);
-    gtk_grid_attach(GTK_GRID(grid),new->textentry[1],2,Current_Row(list),1,1);
-    gtk_widget_show(new->textentry[0]);
-    gtk_widget_show(new->textentry[1]);
-    Add(list,new);
+    struct stand* new_stand=Make_New_Stand();
+    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,Current_Row(months),1,1);//bez sensu to current row
+    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[1],2,Current_Row(months),1,1);
+    gtk_widget_show(new_stand->textentry[0]);
+    gtk_widget_show(new_stand->textentry[1]);
+    Add(months,new_stand);
+}
+void Add_New_Month(GtkWidget* grid)
+{
+    struct month* new=Make_New_Month(months,grid);
+    gtk_widget_show(new->textentry);
+    Add_To_Months(months,new);
 }
 void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
 {
-    Add_Text_Entry(grid);
+    if(Current_Row(months)!=0)Add_Text_Entry(grid);
 }
-
+void On_Clicked_Button2(GtkWidget* widget,GtkWidget* grid)
+{
+    Add_New_Month(grid);
+}
 void Make_Buttons(GtkWidget* grid)
 {
     GtkWidget* button1;
@@ -34,7 +34,7 @@ void Make_Buttons(GtkWidget* grid)
     gtk_grid_attach(GTK_GRID(grid),button1,0,0,1,1);
     gtk_grid_attach(GTK_GRID(grid),button2,0,1,1,1);
     g_signal_connect(button1,"clicked",G_CALLBACK(On_Clicked_Button1),grid);
-
+    g_signal_connect(button2,"clicked",G_CALLBACK(On_Clicked_Button2),grid);
 }
 void Make_Window()
 {
@@ -59,9 +59,13 @@ void Make_Window()
 
 int main(int argc,char* argv[])
 {
-    list=(struct list*)calloc(1,sizeof(struct list));
+    struct list* list=(struct list*)calloc(1,sizeof(struct list));
     list->next=NULL;
     list->number=0;
+    months=(struct month*)calloc(1,sizeof(struct month));
+    months->list=list;
+    months->next=NULL;
+    months->number=0;
     gtk_init(&argc,&argv);
     Make_Window();
     gtk_main();
