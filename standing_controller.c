@@ -51,9 +51,11 @@ struct stand*  Make_New_Stand()
     g_signal_connect (new_stand->textentry[1], "activate",G_CALLBACK (Enter_Callback_Value),new_stand);
     gtk_editable_select_region (GTK_EDITABLE (new_stand->textentry[0]),0, gtk_entry_get_text_length(GTK_ENTRY(new_stand->textentry[0])));
     gtk_editable_select_region (GTK_EDITABLE (new_stand->textentry[1]),0, gtk_entry_get_text_length(GTK_ENTRY(new_stand->textentry[1])));
+    gtk_widget_show(new_stand->textentry[0]);
+    gtk_widget_show(new_stand->textentry[1]);
     return new_stand;
 }
-struct month* Make_New_Month(struct month* months,GtkWidget* grid)
+void Make_New_Month(struct month* months,GtkWidget* grid)
 {
     struct month* new_month=(struct month*)calloc(1,sizeof(struct month));
     struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
@@ -62,29 +64,7 @@ struct month* Make_New_Month(struct month* months,GtkWidget* grid)
     g_signal_connect (new_month->textentry, "activate",G_CALLBACK (Enter_Callback_Month),new_month);
     gtk_grid_attach(GTK_GRID(grid),new_month->textentry,1,Current_Row(months),1,1);
     gtk_editable_select_region (GTK_EDITABLE (new_month->textentry),0, gtk_entry_get_text_length(GTK_ENTRY(new_month->textentry)));
-    struct month* wsk=months;
-    while(wsk->next!=NULL)
-    {
-        wsk=wsk->next;
-    }
-    wsk->list->number++;
-    new_list=wsk->list;
-    new_month->list=new_list;
-    new_month->next=NULL;
-    new_month->number=0;
-    for(int i=0;i<wsk->number;i++)
-    {
-        struct stand* new_stand=Make_New_Stand();
-        gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,new_month->list->number,1,1);
-        gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[1],2,new_month->list->number,1,1);
-        gtk_widget_show(new_stand->textentry[0]);
-        gtk_widget_show(new_stand->textentry[1]);
-        Add(new_month,new_stand);
-    }
-    return new_month;
-}
-void Add(struct month* months,struct stand* new_stand)
-{
+    gtk_widget_show(new_month->textentry);
     struct month* wsk=months;
     while(wsk->next!=NULL)
     {
@@ -95,25 +75,40 @@ void Add(struct month* months,struct stand* new_stand)
     {
         lwsk=lwsk->next;
     }
-    struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
-    new_list->stand=new_stand;
+    lwsk->number++;
+    new_list->stand=NULL;
     new_list->next=NULL;
-    new_list->number=lwsk->number+1;
-    lwsk->next=new_list;
-    wsk->number++;
-}
-void Add_To_Months(struct month* months, struct month* month)
-{
-    if(months==NULL)
+    new_list->number=lwsk->number;
+    new_month->list=new_list;
+    new_month->next=NULL;
+    new_month->number=0;
+    for(int i=0;i<wsk->number;i++)
     {
-        months=month;
-        return;
+        struct stand* new_stand=Make_New_Stand();
+        gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,Current_Row(new_month),1,1);
+        gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[1],2,Current_Row(new_month),1,1);
+        gtk_widget_show(new_stand->textentry[0]);
+        gtk_widget_show(new_stand->textentry[1]);
+        Add(new_month,new_stand);
     }
+    wsk->next=new_month;
+}
+void Add(struct month* months,struct stand* new_stand)
+{
     struct month* wsk=months;
     while(wsk->next!=NULL)
     {
         wsk=wsk->next;
     }
-    wsk->next=month;
-
+    wsk->number++;
+    struct list* lwsk=wsk->list;
+    while(lwsk->next!=NULL)
+    {
+        lwsk=lwsk->next;
+    }
+    struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
+    new_list->stand=new_stand;
+    new_list->next=NULL;
+    new_list->number=lwsk->number+1;
+    lwsk->next=new_list;
 }

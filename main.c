@@ -13,9 +13,7 @@ void Add_Text_Entry(GtkWidget* grid)
 }
 void Add_New_Month(GtkWidget* grid)
 {
-    struct month* new=Make_New_Month(months,grid);
-    gtk_widget_show(new->textentry);
-    Add_To_Months(months,new);
+    Make_New_Month(months,grid);
 }
 void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
 {
@@ -60,6 +58,7 @@ void Make_Window()
 int main(int argc,char* argv[])
 {
     struct list* list=(struct list*)calloc(1,sizeof(struct list));
+    list->stand=NULL;
     list->next=NULL;
     list->number=0;
     months=(struct month*)calloc(1,sizeof(struct month));

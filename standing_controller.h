@@ -16,7 +16,6 @@ struct list
     int number;
     struct stand* stand;
     struct list* next;
-
 };
 struct month
 {
@@ -31,7 +30,6 @@ int Current_Row(struct month*);
 void Enter_Callback_Name( GtkWidget*,gpointer);
 void Enter_Callback_Value( GtkWidget*,gpointer);
 struct stand*  Make_New_Stand();
-struct month* Make_New_Month(struct month*,GtkWidget*);
+void Make_New_Month(struct month*,GtkWidget*);
 void Add(struct month*,struct stand*);
-void Add_To_Months(struct month*,struct month*);
 #endif
