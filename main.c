@@ -1,5 +1,5 @@
 #include "standing_controller.h"
-#include <stdlib.h>
+#include "file_controller.h"
 
 struct month* months;
 void Add_Text_Entry(GtkWidget* grid)
@@ -10,6 +10,10 @@ void Add_Text_Entry(GtkWidget* grid)
     gtk_widget_show(new_stand->textentry[0]);
     gtk_widget_show(new_stand->textentry[1]);
     Add(months,new_stand);
+}
+void Delete_Standing(GtkWidget* grid)
+{
+    //Delete_Chosen_One()
 }
 void Add_New_Month(GtkWidget* grid)
 {
@@ -22,6 +26,19 @@ void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
 void On_Clicked_Button2(GtkWidget* widget,GtkWidget* grid)
 {
     Add_New_Month(grid);
+}
+void On_Clicked_Button3(GtkWidget* widget,GtkWidget* grid)
+{
+    //
+}
+void Close_App(GtkWidget* widget)
+{
+    Write_To_File(months->next);
+    gtk_main_quit();
+}
+void Open_App(GtkWidget* grid)
+{
+    Activate(months->next,grid);
 }
 void Make_Buttons(GtkWidget* grid)
 {
@@ -46,25 +63,18 @@ void Make_Window()
     gtk_window_set_title(GTK_WINDOW(window),"Expensometer");
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
-    g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(gtk_main_quit),NULL);
+    g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(Close_App),NULL);
     
+    Open_App(grid);
     Make_Buttons(grid);
     
     gtk_container_add(GTK_CONTAINER(scrolled_window),grid);
     gtk_container_add(GTK_CONTAINER(window),scrolled_window);
     gtk_widget_show_all(window);
 }
-
 int main(int argc,char* argv[])
 {
-    struct list* list=(struct list*)calloc(1,sizeof(struct list));
-    list->stand=NULL;
-    list->next=NULL;
-    list->number=0;
-    months=(struct month*)calloc(1,sizeof(struct month));
-    months->list=list;
-    months->next=NULL;
-    months->number=0;
+    months=Write_From_File();
     gtk_init(&argc,&argv);
     Make_Window();
     gtk_main();

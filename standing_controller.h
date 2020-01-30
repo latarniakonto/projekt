@@ -2,8 +2,11 @@
 
 #define STANDING_CONTROLLER
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <gtk/gtk.h>
+
 
 struct stand
 {
@@ -24,12 +27,13 @@ struct month
     GtkWidget* textentry;
     struct list* list;
     struct month* next;
-
 };
-int Current_Row(struct month*);
 void Enter_Callback_Name( GtkWidget*,gpointer);
 void Enter_Callback_Value( GtkWidget*,gpointer);
+void Enter_Callback_Month( GtkWidget*,gpointer);
+int Current_Row(struct month*);
 struct stand*  Make_New_Stand();
 void Make_New_Month(struct month*,GtkWidget*);
 void Add(struct month*,struct stand*);
+void Activate(struct month*,GtkWidget*);
 #endif
