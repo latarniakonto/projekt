@@ -7,7 +7,13 @@ void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
   struct stand* wsk=entry;
   const gchar *entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[0]));
-  strcpy(wsk->name,entry_text);
+  if(entry_text[0]!='\0')
+  {
+    strcpy(wsk->name,entry_text);
+  }else
+  {
+    strcpy(wsk->name,"EMPTY");
+  }
   printf ("Entry contents: %s\n", entry_text);
 }
 void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
@@ -15,7 +21,13 @@ void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
   struct stand* wsk=entry;
   const gchar* entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[1]));
-  strcpy(wsk->value,entry_text);
+  if(entry_text[0]!='\0')
+  {
+    strcpy(wsk->value,entry_text);
+  }else
+  {
+    strcpy(wsk->value,"EMPTY");
+  }
   printf ("Entry contents: %s\n", entry_text);
 }
 void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
@@ -23,7 +35,13 @@ void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
   struct month* wsk=entry;
   const gchar* entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry));
-  strcpy(wsk->name,entry_text);
+  if(entry_text[0]!='\0')
+  {
+    strcpy(wsk->name,entry_text);
+  }else
+  {
+    strcpy(wsk->name,"EMPTY");
+  }
   printf ("Entry contents: %s\n", entry_text);
 }
 int Current_Row(struct month* months)
@@ -125,7 +143,10 @@ void Activate(struct month* months,GtkWidget* grid)
         gtk_entry_set_max_length(GTK_ENTRY(wsk->textentry),30);
         g_signal_connect (wsk->textentry, "activate",G_CALLBACK (Enter_Callback_Month),wsk);
         gtk_editable_select_region (GTK_EDITABLE (wsk->textentry),0, gtk_entry_get_text_length(GTK_ENTRY(wsk->textentry)));
-        gtk_entry_set_text(GTK_ENTRY(wsk->textentry),wsk->name);
+        if(strcmp(wsk->name,"EMPTY")!=0)
+        {
+            gtk_entry_set_text(GTK_ENTRY(wsk->textentry),wsk->name);
+        }
         gtk_grid_attach(GTK_GRID(grid),wsk->textentry,1,i,1,1);
         gtk_widget_show(wsk->textentry);
         i++;
@@ -141,8 +162,14 @@ void Activate(struct month* months,GtkWidget* grid)
             g_signal_connect (swsk->textentry[1], "activate",G_CALLBACK (Enter_Callback_Value),swsk);
             gtk_editable_select_region (GTK_EDITABLE (swsk->textentry[0]),0, gtk_entry_get_text_length(GTK_ENTRY(swsk->textentry[0])));
             gtk_editable_select_region (GTK_EDITABLE (swsk->textentry[1]),0, gtk_entry_get_text_length(GTK_ENTRY(swsk->textentry[1])));
-            gtk_entry_set_text(GTK_ENTRY(swsk->textentry[0]),swsk->name);
-            gtk_entry_set_text(GTK_ENTRY(swsk->textentry[1]),swsk->value);
+            if(strcmp(swsk->name,"EMPTY")!=0)
+            {
+                gtk_entry_set_text(GTK_ENTRY(swsk->textentry[0]),swsk->name);
+            }
+            if(strcmp(swsk->value,"EMPTY")!=0)
+            {
+                gtk_entry_set_text(GTK_ENTRY(swsk->textentry[1]),swsk->value);
+            }
             gtk_grid_attach(GTK_GRID(grid),swsk->textentry[0],1,i,1,1);
             gtk_grid_attach(GTK_GRID(grid),swsk->textentry[1],2,i,1,1);
             gtk_widget_show(swsk->textentry[0]);
