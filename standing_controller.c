@@ -63,8 +63,8 @@ struct stand*  Make_New_Stand()
     struct stand* new_stand=(struct stand*)calloc(1,sizeof(struct stand));
     new_stand->textentry[0]=gtk_entry_new();
     new_stand->textentry[1]=gtk_entry_new();
-    new_stand->name[0]='\0';
-    new_stand->value[0]='\0';
+    strcpy(new_stand->name,"EMPTY");
+    strcpy(new_stand->value,"EMPTY");
     gtk_entry_set_max_length(GTK_ENTRY(new_stand->textentry[0]),30);
     gtk_entry_set_max_length(GTK_ENTRY(new_stand->textentry[1]),30);
     g_signal_connect (new_stand->textentry[0], "activate",G_CALLBACK (Enter_Callback_Name),new_stand);
@@ -102,7 +102,7 @@ void Make_New_Month(struct month* months,GtkWidget* grid)
     new_month->list=new_list;
     new_month->next=NULL;
     new_month->number=0;
-    new_month->name[0]='\0';
+    strcpy(new_month->name,"EMPTY");
     for(int i=0;i<wsk->number;i++)
     {
         struct stand* new_stand=Make_New_Stand();
