@@ -151,6 +151,7 @@ void Activate(struct month* months,GtkWidget* grid)
         gtk_widget_show(wsk->textentry);
         i++;
         struct list* lwsk=wsk->list;
+        lwsk=lwsk->next;
         while(lwsk!=NULL)
         {
             struct stand* swsk=lwsk->stand;
@@ -178,5 +179,6 @@ void Activate(struct month* months,GtkWidget* grid)
             lwsk=lwsk->next;
         }
         wsk=wsk->next;
+        
     }
 }

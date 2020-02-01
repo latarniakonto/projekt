@@ -13,16 +13,20 @@ void Write_To_File(struct month* months)
         fprintf(ofile,"%s\n",wsk->name);
         fprintf(ofile,"%d\n",wsk->number);
         struct list* lwsk=wsk->list;
-        while(lwsk!=NULL)
+        if(lwsk->next!=NULL)
         {
-            if(lwsk->stand!=NULL)
+            while(lwsk!=NULL)
             {
-                fprintf(ofile,"%d ",lwsk->number);
-                fprintf(ofile,"%s ",lwsk->stand->name);
-                fprintf(ofile,"%s ",lwsk->stand->value);
-                fprintf(ofile,"\n");
+                if(lwsk->stand!=NULL)
+                {
+                    fprintf(ofile,"%d ",lwsk->number);
+                    fprintf(ofile,"%s ",lwsk->stand->name);
+                    fprintf(ofile,"%s ",lwsk->stand->value);
+                    fprintf(ofile,"\n");
+                }
+                lwsk=lwsk->next;
             }
-            lwsk=lwsk->next;
+
         }
         wsk=wsk->next;
     }
@@ -48,8 +52,9 @@ struct month* Write_From_File()
             struct month* new_month=(struct month*)calloc(1,sizeof(struct month));
             fscanf(ofile,"%s",new_month->name);
             fscanf(ofile,"%d",&new_month->number);
-            new_month->list=NULL;
+            new_month->list=list;
             new_month->next=NULL;
+            if(new_month->number==0)new_month->list->number=1;
             for(int i=0;i<new_month->number;i++)
             {
                 struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
@@ -75,11 +80,6 @@ void Add_To_List(struct month* months, struct list* new)
         wsk=wsk->next;
     }
     struct list* lwsk=wsk->list;
-    if(lwsk==NULL)
-    {
-        wsk->list=new;
-        return;
-    }
     while(lwsk->next!=NULL)lwsk=lwsk->next;
     lwsk->next=new;
 }

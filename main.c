@@ -25,7 +25,8 @@ void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
 }
 void On_Clicked_Button2(GtkWidget* widget,GtkWidget* grid)
 {
-    Add_New_Month(grid);
+    if(Current_Row(months)==0||months->next->number>=1)Add_New_Month(grid);
+    
 }
 void On_Clicked_Button3(GtkWidget* widget,GtkWidget* grid)
 {
