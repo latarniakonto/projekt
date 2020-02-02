@@ -23,7 +23,16 @@ void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[1]));
   if(entry_text[0]!='\0')
   {
-    strcpy(wsk->value,entry_text);
+    if(Is_Good_Entry(entry_text))
+    {
+      strcpy(wsk->value,entry_text);
+    }else
+    {
+      char empty[256]="";
+      gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),empty);
+      strcpy(wsk->value,"EMPTY");  
+    }
+    
   }else
   {
     strcpy(wsk->value,"EMPTY");
@@ -37,7 +46,16 @@ void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry));
   if(entry_text[0]!='\0')
   {
-    strcpy(wsk->name,entry_text);
+    if(Is_Good_Entry(entry_text))
+    {
+      strcpy(wsk->name,entry_text);
+    }else
+    {
+      char empty[256]="";
+      gtk_entry_set_text(GTK_ENTRY(wsk->textentry),empty);
+      strcpy(wsk->name,"EMPTY");
+    }
+    
   }else
   {
     strcpy(wsk->name,"EMPTY");
@@ -181,4 +199,14 @@ void Activate(struct month* months,GtkWidget* grid)
         wsk=wsk->next;
         
     }
+}
+bool Is_Good_Entry(const gchar* text)
+{
+  const gchar* wsk=text;
+  while(*wsk!='\0')
+  {
+    if(*wsk!=43&&*wsk!=44&&*wsk!=45&&*wsk!=61&&(*wsk<48||*wsk>57)&&(*wsk<65||*wsk>90)&&(*wsk<97||*wsk>122))return false;
+    wsk++;
+  }
+  return true;
 }

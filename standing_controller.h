@@ -36,4 +36,5 @@ struct stand*  Make_New_Stand();
 void Make_New_Month(struct month*,GtkWidget*);
 void Add(struct month*,struct stand*);
 void Activate(struct month*,GtkWidget*);
+bool Is_Good_Entry(const gchar*);
 #endif
