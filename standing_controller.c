@@ -9,7 +9,16 @@ void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[0]));
   if(entry_text[0]!='\0')
   {
-    strcpy(wsk->name,entry_text);
+    if(Is_Good_Entry(entry_text))
+    {
+      strcpy(wsk->name,entry_text);
+    }else
+    {
+      char empty[256]="";
+      gtk_entry_set_text(GTK_ENTRY(wsk->textentry[0]),empty);
+      strcpy(wsk->name,"EMPTY");
+    }
+    
   }else
   {
     strcpy(wsk->name,"EMPTY");
