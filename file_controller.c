@@ -50,9 +50,13 @@ struct month* Write_From_File()
         if(strcmp(data,"Month")==0)
         {
             struct month* new_month=(struct month*)calloc(1,sizeof(struct month));
+            struct list* empty=(struct list*)calloc(1,sizeof(struct list));
+            empty->stand=NULL;
+            empty->next=NULL;
+            empty->number=0;
             fscanf(ofile,"%s",new_month->name);
             fscanf(ofile,"%d",&new_month->number);
-            new_month->list=list;
+            new_month->list=empty;
             new_month->next=NULL;
             if(new_month->number==0)new_month->list->number=1;
             for(int i=0;i<new_month->number;i++)

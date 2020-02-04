@@ -25,27 +25,66 @@ void Enter_Callback_Name( GtkWidget *widget,gpointer entry)
   }
   printf ("Entry contents: %s\n", entry_text);
 }
-void Enter_Callback_Value( GtkWidget *widget,gpointer entry)
+void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
 {
   struct stand* wsk=entry;
   const gchar* entry_text;
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[1]));
-  if(entry_text[0]!='\0')
+  if(strcmp(wsk->value,"EMPTY")!=0)
   {
     if(Is_Good_Entry(entry_text))
     {
-      strcpy(wsk->value,entry_text);
+      gchar edit[256];
+      Convert_Formula(wsk->value,edit);
+      if(strcmp(edit,entry_text)==0)
+      {
+        gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),wsk->value);
+      }else if(strcmp(wsk->value,entry_text)==0)
+      {
+        gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edit);
+      }else
+      {
+        gchar edited[256];
+        gchar remember[256];
+        strcpy(remember,entry_text);
+        Convert_Formula(entry_text,edited);
+        gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edited);
+        strcpy(wsk->value,remember);
+      }
+      
     }else
     {
-      char empty[256]="";
-      gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),empty);
-      strcpy(wsk->value,"EMPTY");  
+      gchar empty[256]="";
+      gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),empty);
+      strcpy(wsk->value,"EMPTY");
     }
     
   }else
   {
-    strcpy(wsk->value,"EMPTY");
+
+  
+    if(entry_text[0]!='\0')
+    {
+      if(Is_Good_Entry(entry_text))
+      {
+        gchar edited[256];
+        gchar remember[256];
+        strcpy(remember,entry_text);
+        Convert_Formula(entry_text,edited);
+        gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),edited);
+        strcpy(wsk->value,remember);
+      }else
+      {
+        gchar empty[256]="";
+        gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),empty);
+        strcpy(wsk->value,"EMPTY");  
+      }
+    }else
+    {
+      strcpy(wsk->value,"EMPTY");
+    }  
   }
+  
   printf ("Entry contents: %s\n", entry_text);
 }
 void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
@@ -122,10 +161,9 @@ void Make_New_Month(struct month* months,GtkWidget* grid)
     {
         lwsk=lwsk->next;
     }
-    lwsk->number++;
     new_list->stand=NULL;
     new_list->next=NULL;
-    new_list->number=lwsk->number;
+    new_list->number=lwsk->number+1;
     new_month->list=new_list;
     new_month->next=NULL;
     new_month->number=0;
@@ -218,4 +256,162 @@ bool Is_Good_Entry(const gchar* text)
     wsk++;
   }
   return true;
+}
+void Convert_Formula(const gchar* formula,gchar editing[])
+{
+  const gchar* wsk=formula;
+  if(*wsk!='=')
+  {
+    return;
+  }
+  wsk++;
+  double sum=0.;
+  int operators=1;
+  double i=0;
+  double d=0.;
+  bool t=true;
+  bool add=true;
+  while(*wsk!='\0')
+  {
+    if(operators==1)
+    {
+      if(*wsk=='+'||*wsk=='-'||*wsk==',')
+      {
+        return;
+      }else
+      {
+        operators=0;
+        t=false;
+      }
+    }
+    if(operators==0)
+    {
+      if(!t)
+      {
+        if(*wsk=='+')
+        {
+          if(add)
+          {
+            sum+=i;
+          }else
+          {
+            sum-=i;
+          }
+          operators=1;
+          add=true;
+          i=0.;
+        }else if(*wsk=='-')
+        {
+          if(add)
+          {
+            sum+=i;
+            i=0.;
+          }else
+          {
+            sum-=i;
+            i=0.;
+          }
+          operators=1;
+          add=false;
+        }else if(*wsk==',')
+        {
+          t=true;
+        }else
+        {
+          i*=10.;
+          i+=(*wsk-'0'); 
+        }
+      }else
+      {
+        if(*wsk==',')
+        {
+          return;
+        }
+        if(*wsk=='+')
+        {
+          operators=1;
+          d/=100.;
+          if(add)
+          {
+            sum+=i;
+            sum+=d;
+          }else
+          {
+            sum-=i;
+            sum-=d;
+          }
+          i=0.;
+          d=0.;
+        }else if(*wsk=='-')
+        {
+          operators=1;
+          d/=100.;
+          sum-=i;
+          sum-=d;
+          i=0.;
+          d=0.;
+        }else
+        {
+          d*=10.;
+          d+=(*wsk-'0');
+        }
+      }
+    }
+    wsk++;
+  }
+  if(add)
+  {
+    d/=100.;
+    sum+=i;
+    sum+=d;
+  }else
+  {
+    d/=100.;
+    sum-=i;
+    sum-=d;
+  }
+  //co gdy 0,5
+  int ipart=floor(sum);
+  int fpart=ceil((sum-(double)ipart)*100);
+  char ipartc[256];
+  char fpartc[256];
+  int j=0;
+  int k=0;
+  int z=0;
+  while(ipart>0)
+  {
+    ipartc[j]=ipart%10+'0';
+    j++;
+    ipart/=10;
+  }
+  if(fpart!=0)
+  {
+    for(int p=j-1;p>=0;p--)
+    {
+      editing[z]=ipartc[p];
+      z++;
+    }
+    editing[z]=',';
+    z++;
+    while(fpart>0)
+    {
+      fpartc[k]=fpart%10+'0';
+      k++;
+      fpart/=10;
+    }
+    for(int p=k-1;p>=0;p--)
+    {
+      editing[z]=fpartc[p];
+      z++;
+    }
+    editing[z]='\0';
+  }else
+  {
+    for(int p=j-1;p>=0;p--)
+    {
+      editing[z]=ipartc[p];
+      z++;
+    }
+    editing[z]='\0';
+  }
 }
