@@ -353,7 +353,8 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         if(*wsk=='+')
         {
           operators=1;
-          d/=100.;
+          if(d<10.)d/=10.;
+          else d/=100.;
           if(add)
           {
             sum+=i;
@@ -369,7 +370,8 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         }else if(*wsk=='-')
         {
           operators=1;
-          d/100;
+          if(d<10.)d/=10.;
+          else d/=100.;
           if(add)
           {
             sum+=i;
@@ -393,18 +395,23 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
   }
   if(add)
   {
-    d/=100.;
+    if(d<10.)d/=10.;
+    else d/=100.;
     sum+=i;
     sum+=d;
   }else
   {
-    d/=100.;
+    if(d<10.)d/=10.;
+    else d/=100.;
     sum-=i;
     sum-=d;
   }
-  //co gdy 0,5
+  printf("%lf",sum);
+  sum+=0.001;
   int ipart=floor(sum);
-  int fpart=ceil((sum-(double)ipart)*100);
+  int fpart=floor((sum-ipart)*100.);
+  printf("%d\n",ipart);
+  printf("%d\n",fpart);
   char ipartc[256];
   char fpartc[256];
   int j=0;
@@ -425,6 +432,11 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
     }
     editing[z]='.';
     z++;
+    if(sum-floor(sum)<0.1)
+    {
+      editing[z]='0';
+      z++;
+    }
     while(fpart>0)
     {
       fpartc[k]=fpart%10+'0';
