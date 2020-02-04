@@ -35,7 +35,6 @@ void Write_To_File(struct month* months)
 struct month* Write_From_File()
 {
     FILE* ofile=fopen("dane.txt","r");
-    if(ofile==NULL)return NULL;
     struct month* months=(struct month*)calloc(1,sizeof(struct month));
     struct list* list=(struct list*)calloc(1,sizeof(struct list));
     list->stand=NULL;
@@ -44,6 +43,7 @@ struct month* Write_From_File()
     months->list=list;
     months->next=NULL;
     months->name[0]='\0';
+    if(ofile==NULL)return months;
     char data[256];
     while(fscanf(ofile,"%s",data)==1)
     {

@@ -32,10 +32,15 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
   entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[1]));
   if(strcmp(wsk->value,"EMPTY")!=0)
   {
+    if(entry_text[0]=='\0')
+    {
+      strcpy(wsk->value,"EMPTY");
+      return;
+    }
     if(Is_Good_Entry(entry_text))
     {
       gchar edit[256];
-      Convert_Formula(wsk->value,edit);
+      bool t=Convert_Formula(wsk->value,edit);
       if(strcmp(edit,entry_text)==0)
       {
         gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),wsk->value);
@@ -44,14 +49,19 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
         gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edit);
       }else
       {
-        gchar edited[256];
-        gchar remember[256];
-        strcpy(remember,entry_text);
-        Convert_Formula(entry_text,edited);
-        gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edited);
-        strcpy(wsk->value,remember);
+        t=Convert_Formula(entry_text,edit);
+        if(t)
+        {
+          gchar remember[256];
+          strcpy(remember,entry_text);
+          gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edit);
+          strcpy(wsk->value,remember);
+        }else
+        {
+          t=Convert_Formula(wsk->value,edit);
+          if(t)gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),edit);
+        }
       }
-      
     }else
     {
       gchar empty[256]="";
@@ -61,18 +71,25 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
     
   }else
   {
-
-  
     if(entry_text[0]!='\0')
     {
       if(Is_Good_Entry(entry_text))
       {
-        gchar edited[256];
+        gchar edit[256];
         gchar remember[256];
         strcpy(remember,entry_text);
-        Convert_Formula(entry_text,edited);
-        gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),edited);
-        strcpy(wsk->value,remember);
+        bool t=Convert_Formula(entry_text,edit);
+        if(t)
+        {
+          gtk_entry_set_text (GTK_ENTRY (wsk->textentry[1]),edit);
+          strcpy(wsk->value,remember);
+        }else
+        {
+          gchar empty[256]="";
+          gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),empty);
+          strcpy(wsk->value,"EMPTY");
+        }
+        
       }else
       {
         gchar empty[256]="";
@@ -234,7 +251,16 @@ void Activate(struct month* months,GtkWidget* grid)
             }
             if(strcmp(swsk->value,"EMPTY")!=0)
             {
-                gtk_entry_set_text(GTK_ENTRY(swsk->textentry[1]),swsk->value);
+                gchar edit[256];
+                bool t=Convert_Formula(swsk->value,edit);
+                if(!t)
+                {
+                  gchar empty[256]="";
+                  gtk_entry_set_text(GTK_ENTRY(swsk->textentry[1]),empty);
+                  strcpy(swsk->value,"EMPTY");
+                  return;
+                }
+                gtk_entry_set_text (GTK_ENTRY (swsk->textentry[1]),edit);
             }
             gtk_grid_attach(GTK_GRID(grid),swsk->textentry[0],1,i,1,1);
             gtk_grid_attach(GTK_GRID(grid),swsk->textentry[1],2,i,1,1);
@@ -257,12 +283,12 @@ bool Is_Good_Entry(const gchar* text)
   }
   return true;
 }
-void Convert_Formula(const gchar* formula,gchar editing[])
+bool Convert_Formula(const gchar* formula,gchar editing[])
 {
   const gchar* wsk=formula;
   if(*wsk!='=')
   {
-    return;
+    return false;
   }
   wsk++;
   double sum=0.;
@@ -277,7 +303,7 @@ void Convert_Formula(const gchar* formula,gchar editing[])
     {
       if(*wsk=='+'||*wsk=='-'||*wsk==',')
       {
-        return;
+        return false;
       }else
       {
         operators=0;
@@ -325,7 +351,7 @@ void Convert_Formula(const gchar* formula,gchar editing[])
       {
         if(*wsk==',')
         {
-          return;
+          return false;
         }
         if(*wsk=='+')
         {
@@ -342,14 +368,23 @@ void Convert_Formula(const gchar* formula,gchar editing[])
           }
           i=0.;
           d=0.;
+          add=true;
         }else if(*wsk=='-')
         {
           operators=1;
-          d/=100.;
-          sum-=i;
-          sum-=d;
+          d/100;
+          if(add)
+          {
+            sum+=i;
+            sum+=d;
+          }else
+          {
+            sum-=i;
+            sum-=d;
+          }
           i=0.;
           d=0.;
+          add=false;
         }else
         {
           d*=10.;
@@ -414,4 +449,5 @@ void Convert_Formula(const gchar* formula,gchar editing[])
     }
     editing[z]='\0';
   }
+  return true;
 }

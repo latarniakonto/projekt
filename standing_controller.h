@@ -38,5 +38,5 @@ void Make_New_Month(struct month*,GtkWidget*);
 void Add(struct month*,struct stand*);
 void Activate(struct month*,GtkWidget*);
 bool Is_Good_Entry(const gchar*);
-void Convert_Formula(const gchar*,gchar[]);
+bool Convert_Formula(const gchar*,gchar[]);
 #endif
