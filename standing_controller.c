@@ -68,7 +68,6 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
       gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),empty);
       strcpy(wsk->value,"EMPTY");
     }
-    
   }else
   {
     if(entry_text[0]!='\0')
@@ -89,7 +88,6 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
           gtk_entry_set_text(GTK_ENTRY(wsk->textentry[1]),empty);
           strcpy(wsk->value,"EMPTY");
         }
-        
       }else
       {
         gchar empty[256]="";
@@ -101,7 +99,6 @@ void Enter_Callback_Value( GtkWidget* widget,gpointer entry)
       strcpy(wsk->value,"EMPTY");
     }  
   }
-  
   printf ("Entry contents: %s\n", entry_text);
 }
 void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
@@ -278,7 +275,7 @@ bool Is_Good_Entry(const gchar* text)
   const gchar* wsk=text;
   while(*wsk!='\0')
   {
-    if(*wsk!=43&&*wsk!=44&&*wsk!=45&&*wsk!=61&&(*wsk<48||*wsk>57)&&(*wsk<65||*wsk>90)&&(*wsk<97||*wsk>122))return false;
+    if(*wsk!=43&&*wsk!=45&&*wsk!=46&&*wsk!=61&&(*wsk<48||*wsk>57)&&(*wsk<65||*wsk>90)&&(*wsk<97||*wsk>122))return false;
     wsk++;
   }
   return true;
@@ -301,7 +298,7 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
   {
     if(operators==1)
     {
-      if(*wsk=='+'||*wsk=='-'||*wsk==',')
+      if(*wsk=='+'||*wsk=='-'||*wsk=='.')
       {
         return false;
       }else
@@ -339,7 +336,7 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
           }
           operators=1;
           add=false;
-        }else if(*wsk==',')
+        }else if(*wsk=='.')
         {
           t=true;
         }else
@@ -349,7 +346,7 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         }
       }else
       {
-        if(*wsk==',')
+        if(*wsk=='.')
         {
           return false;
         }
@@ -426,7 +423,7 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
       editing[z]=ipartc[p];
       z++;
     }
-    editing[z]=',';
+    editing[z]='.';
     z++;
     while(fpart>0)
     {
