@@ -293,6 +293,7 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
   double i=0;
   double d=0.;
   bool t=true;
+  bool r=false;
   bool add=true;
   while(*wsk!='\0')
   {
@@ -353,8 +354,19 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         if(*wsk=='+')
         {
           operators=1;
-          if(d<10.)d/=10.;
-          else d/=100.;
+          if(d<10.)
+          {
+            if(r)
+            {
+              d/=100.;
+              r=false;
+            }
+            else d/=10.;
+          }else 
+          {
+            d/=100.;
+          }
+
           if(add)
           {
             sum+=i;
@@ -370,8 +382,19 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         }else if(*wsk=='-')
         {
           operators=1;
-          if(d<10.)d/=10.;
-          else d/=100.;
+         
+          if(d<10.)
+          {
+            if(r)
+            {
+              d/=100.;
+              r=false;
+            }else d/=10.;
+          }else
+          {
+            d/=100.;
+          }
+          
           if(add)
           {
             sum+=i;
@@ -387,6 +410,10 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
         }else
         {
           d*=10.;
+          if(d==0.&&(*wsk)=='0')
+          {
+            r=true;
+          }
           d+=(*wsk-'0');
         }
       }
@@ -395,14 +422,36 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
   }
   if(add)
   {
-    if(d<10.)d/=10.;
-    else d/=100.;
+    if(d<10.)
+    {
+      if(r)
+      {
+        d/=100.;
+        r=false;
+      } 
+      else d/=10.;
+    }else 
+    {
+      d/=100.;
+    }
+  
     sum+=i;
     sum+=d;
   }else
   {
-    if(d<10.)d/=10.;
-    else d/=100.;
+    if(d<10.)
+    {
+      if(r)
+      {
+        d/=100.;
+        r=false;
+      }
+      else d/=10.;
+    }else 
+    {
+      d/=100.;
+    }
+    
     sum-=i;
     sum-=d;
   }
