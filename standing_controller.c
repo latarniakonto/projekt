@@ -105,7 +105,7 @@ void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
 {
   struct month* wsk=entry;
   const gchar* entry_text;
-  entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry));
+  entry_text = gtk_entry_get_text (GTK_ENTRY (wsk->textentry[0]));
   if(entry_text[0]!='\0')
   {
     if(Is_Good_Entry(entry_text))
@@ -114,7 +114,7 @@ void Enter_Callback_Month( GtkWidget *widget,gpointer entry)
     }else
     {
       char empty[256]="";
-      gtk_entry_set_text(GTK_ENTRY(wsk->textentry),empty);
+      gtk_entry_set_text(GTK_ENTRY(wsk->textentry[0]),empty);
       strcpy(wsk->name,"EMPTY");
     }
     
@@ -159,12 +159,36 @@ void Make_New_Month(struct month* months,GtkWidget* grid)
 {
     struct month* new_month=(struct month*)calloc(1,sizeof(struct month));
     struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
-    new_month->textentry=gtk_entry_new();
-    gtk_entry_set_max_length(GTK_ENTRY(new_month->textentry),30);
-    g_signal_connect (new_month->textentry, "activate",G_CALLBACK (Enter_Callback_Month),new_month);
-    gtk_grid_attach(GTK_GRID(grid),new_month->textentry,1,Current_Row(months),1,1);
-    gtk_editable_select_region (GTK_EDITABLE (new_month->textentry),0, gtk_entry_get_text_length(GTK_ENTRY(new_month->textentry)));
-    gtk_widget_show(new_month->textentry);
+    new_month->textentry[0]=gtk_entry_new();
+    new_month->textentry[1]=gtk_entry_new();
+    bool z=false;
+    if(months->next!=NULL)
+    {
+      z=true;
+      gtk_entry_set_max_length(GTK_ENTRY(new_month->textentry[1]),30);
+      gtk_grid_attach(GTK_GRID(grid),new_month->textentry[1],2,Current_Row(months),1,1);
+      gtk_entry_set_max_length(GTK_ENTRY(new_month->textentry[1]),30);
+      gchar merge[256];
+      Gluestick(months,merge);
+      gchar edit[256];
+      bool t=Convert_Formula(merge,edit);
+      if(t)
+      {
+        printf("ELO");
+        gtk_entry_set_text(GTK_ENTRY(new_month->textentry[1]),edit);
+        gtk_widget_show(new_month->textentry[1]);
+      }
+
+    }
+    gtk_entry_set_max_length(GTK_ENTRY(new_month->textentry[0]),30);
+    if(!z)
+    {
+      gtk_grid_attach(GTK_GRID(grid),new_month->textentry[0],1,Current_Row(months),1,1);
+    }else
+    {
+      gtk_grid_attach(GTK_GRID(grid),new_month->textentry[0],1,Current_Row(months)+1,1,1);
+    }
+    gtk_widget_show(new_month->textentry[0]);
     struct month* wsk=months;
     while(wsk->next!=NULL)
     {
@@ -218,16 +242,16 @@ void Activate(struct month* months,GtkWidget* grid)
     int i=0;
     while(wsk!=NULL)
     {
-        wsk->textentry=gtk_entry_new();
-        gtk_entry_set_max_length(GTK_ENTRY(wsk->textentry),30);
-        g_signal_connect (wsk->textentry, "activate",G_CALLBACK (Enter_Callback_Month),wsk);
-        gtk_editable_select_region (GTK_EDITABLE (wsk->textentry),0, gtk_entry_get_text_length(GTK_ENTRY(wsk->textentry)));
+        wsk->textentry[0]=gtk_entry_new();
+        gtk_entry_set_max_length(GTK_ENTRY(wsk->textentry[0]),30);
+        g_signal_connect (wsk->textentry[0], "activate",G_CALLBACK (Enter_Callback_Month),wsk);
+        gtk_editable_select_region (GTK_EDITABLE (wsk->textentry[0]),0, gtk_entry_get_text_length(GTK_ENTRY(wsk->textentry[0])));
         if(strcmp(wsk->name,"EMPTY")!=0)
         {
-            gtk_entry_set_text(GTK_ENTRY(wsk->textentry),wsk->name);
+            gtk_entry_set_text(GTK_ENTRY(wsk->textentry[0]),wsk->name);
         }
-        gtk_grid_attach(GTK_GRID(grid),wsk->textentry,1,i,1,1);
-        gtk_widget_show(wsk->textentry);
+        gtk_grid_attach(GTK_GRID(grid),wsk->textentry[0],1,i,1,1);
+        gtk_widget_show(wsk->textentry[0]);
         i++;
         struct list* lwsk=wsk->list;
         lwsk=lwsk->next;
@@ -508,4 +532,37 @@ bool Convert_Formula(const gchar* formula,gchar editing[])
     editing[z]='\0';
   }
   return true;
+}
+void Gluestick(struct month* months,gchar editing[])
+{
+  struct month* wsk=months;
+  while(wsk->next!=NULL)
+  {
+    wsk=wsk->next;
+  }
+  editing[0]='=';
+  editing[1]='\0';
+  struct list* lwsk=wsk->list;
+  lwsk=lwsk->next;
+  while(lwsk!=NULL)
+  {
+    if(strcmp(lwsk->stand->value,"EMPTY")!=0)
+    {
+      gchar edit[256];
+      bool t=Convert_Formula(lwsk->stand->value,edit);
+      if(t)
+      {
+        strcat(editing,edit);
+        int size=strlen(editing);
+        editing[size]='+';
+        editing[size+1]='\0';
+      }
+    }
+    lwsk=lwsk->next;
+  }
+  if(editing[1]=='\0')
+  {
+    editing[1]='0';
+    editing[2]='\0';
+  }
 }

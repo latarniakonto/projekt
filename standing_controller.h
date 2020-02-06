@@ -24,8 +24,9 @@ struct list
 struct month
 {
     char name[256];
+    char sum[256];
     int  number;
-    GtkWidget* textentry;
+    GtkWidget* textentry[2];
     struct list* list;
     struct month* next;
 };
@@ -39,4 +40,5 @@ void Add(struct month*,struct stand*);
 void Activate(struct month*,GtkWidget*);
 bool Is_Good_Entry(const gchar*);
 bool Convert_Formula(const gchar*,gchar[]);
+void Gluestick(struct month*,gchar[]);
 #endif

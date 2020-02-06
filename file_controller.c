@@ -43,7 +43,11 @@ struct month* Write_From_File()
     months->list=list;
     months->next=NULL;
     months->name[0]='\0';
-    if(ofile==NULL)return months;
+    months->number=0;
+    if(ofile==NULL)
+    {
+        return months;
+    }
     char data[256];
     while(fscanf(ofile,"%s",data)==1)
     {
