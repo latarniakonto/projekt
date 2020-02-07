@@ -5,15 +5,11 @@ struct month* months;
 void Add_Text_Entry(GtkWidget* grid)
 {
     struct stand* new_stand=Make_New_Stand();
-    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,Current_Row(months),1,1);//bez sensu to current row
+    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,Current_Row(months),1,1);
     gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[1],2,Current_Row(months),1,1);
     gtk_widget_show(new_stand->textentry[0]);
     gtk_widget_show(new_stand->textentry[1]);
     Add(months,new_stand);
-}
-void Delete_Standing(GtkWidget* grid)
-{
-    //Delete_Chosen_One()
 }
 void Add_New_Month(GtkWidget* grid)
 {
@@ -26,11 +22,6 @@ void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
 void On_Clicked_Button2(GtkWidget* widget,GtkWidget* grid)
 {
     if(Current_Row(months)==0||months->next->number>=1)Add_New_Month(grid);
-    
-}
-void On_Clicked_Button3(GtkWidget* widget,GtkWidget* grid)
-{
-    //
 }
 void Close_App(GtkWidget* widget)
 {

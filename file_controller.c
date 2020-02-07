@@ -3,15 +3,15 @@
 
 void Write_To_File(struct month* months)
 {
-    if(months==NULL)return;//chcialbym wiedziec ile jest month i ile jest standings
+    if(months==NULL)return;
     FILE* ofile=fopen("dane.txt","w");
     if(ofile==NULL)return;
     struct month* wsk=months;
     while(wsk!=NULL)
     {
         fprintf(ofile,"%s\n","Month");
-        fprintf(ofile,"%s\n",wsk->name);
-        fprintf(ofile,"%d\n",wsk->number);
+        fprintf(ofile,"%s\n",wsk->name);//nazwa miesiąca
+        fprintf(ofile,"%d\n",wsk->number);//liczba wierszy w miesiącu
         struct list* lwsk=wsk->list;
         if(lwsk->next!=NULL)
         {
@@ -19,9 +19,9 @@ void Write_To_File(struct month* months)
             {
                 if(lwsk->stand!=NULL)
                 {
-                    fprintf(ofile,"%d ",lwsk->number);
-                    fprintf(ofile,"%s ",lwsk->stand->name);
-                    fprintf(ofile,"%s ",lwsk->stand->value);
+                    fprintf(ofile,"%d ",lwsk->number);//numer wiersza w GTK_GRID do którego są przypisane name i value
+                    fprintf(ofile,"%s ",lwsk->stand->name);//nazwa kategorii wydatków
+                    fprintf(ofile,"%s ",lwsk->stand->value);//formuła =10.51+10
                     fprintf(ofile,"\n");
                 }
                 lwsk=lwsk->next;
@@ -58,8 +58,8 @@ struct month* Write_From_File()
             empty->stand=NULL;
             empty->next=NULL;
             empty->number=0;
-            fscanf(ofile,"%s",new_month->name);
-            fscanf(ofile,"%d",&new_month->number);
+            fscanf(ofile,"%s",new_month->name);//nazwa miesiąca
+            fscanf(ofile,"%d",&new_month->number);//liczba wierszy w miesiącu
             new_month->list=empty;
             new_month->next=NULL;
             if(new_month->number==0)new_month->list->number=1;
@@ -67,9 +67,9 @@ struct month* Write_From_File()
             {
                 struct list* new_list=(struct list*)calloc(1,sizeof(struct list));
                 struct stand* new_standing=(struct stand*)calloc(1,sizeof(struct stand));
-                fscanf(ofile,"%d",&new_list->number);
-                fscanf(ofile,"%s",new_standing->name);
-                fscanf(ofile,"%s",new_standing->value);
+                fscanf(ofile,"%d",&new_list->number);//number wiersza w GTK_GRID, do którego przypisany jest name i value
+                fscanf(ofile,"%s",new_standing->name);// nazwa kategorii wydatków
+                fscanf(ofile,"%s",new_standing->value);// formuła =10.51+10
                 new_list->stand=new_standing;
                 new_list->next=NULL;
                 Add_To_List(new_month,new_list);
