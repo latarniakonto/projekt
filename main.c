@@ -1,48 +1,74 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <gtk/gtk.h>
+#include "standing_controller.h"
+#include "file_controller.h"
 
-static void enter_callback( GtkWidget *widget,GtkWidget *entry )
+struct month* months;
+void Add_Text_Entry(GtkWidget* grid)
 {
-  const gchar *entry_text;
-  entry_text = gtk_entry_get_text (GTK_ENTRY (entry));
-  printf ("Entry contents: %s\n", entry_text);
+    struct stand* new_stand=Make_New_Stand();
+    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[0],1,Current_Row(months),1,1);
+    gtk_grid_attach(GTK_GRID(grid),new_stand->textentry[1],2,Current_Row(months),1,1);
+    gtk_widget_show(new_stand->textentry[0]);
+    gtk_widget_show(new_stand->textentry[1]);
+    Add(months,new_stand);
 }
-void EntryTextBox(GtkWidget* window)
+void Add_New_Month(GtkWidget* grid)
 {
-    GtkWidget* entry;
-    GtkWidget* box;
-    gint tmp_pos;
-    box=gtk_box_new(FALSE,0);
-    gtk_container_add(GTK_CONTAINER(window),box);
-    gtk_widget_show(box);
-    entry = gtk_entry_new ();
-    gtk_entry_set_max_length (GTK_ENTRY (entry), 50);
-    g_signal_connect (entry, "activate",G_CALLBACK (enter_callback),entry);
-    gtk_entry_set_text (GTK_ENTRY (entry), "hello");
-    tmp_pos = gtk_entry_get_text_length(GTK_ENTRY(entry));
-    gtk_editable_insert_text (GTK_EDITABLE (entry), " world", -1, &tmp_pos);
-    gtk_editable_select_region (GTK_EDITABLE (entry),0, gtk_entry_get_text_length(GTK_ENTRY(entry)));
-    gtk_box_pack_start (GTK_BOX (box), entry, TRUE, TRUE, 0);
-    gtk_widget_show (entry);
+    Make_New_Month(months,grid);
 }
-void MakeWindow()
+void On_Clicked_Button1(GtkWidget* widget,GtkWidget* grid)
+{
+    if(Current_Row(months)!=0)Add_Text_Entry(grid);
+}
+void On_Clicked_Button2(GtkWidget* widget,GtkWidget* grid)
+{
+    if(Current_Row(months)==0||months->next->number>=1)Add_New_Month(grid);
+}
+void Close_App(GtkWidget* widget)
+{
+    Write_To_File(months->next);
+    gtk_main_quit();
+}
+void Open_App(GtkWidget* grid)
+{
+    Activate(months->next,grid);
+}
+void Make_Buttons(GtkWidget* grid)
+{
+    GtkWidget* button1;
+    GtkWidget* button2;
+    button1=gtk_button_new_with_label("Add new standing");
+    button2=gtk_button_new_with_label("Add new month");
+    gtk_grid_attach(GTK_GRID(grid),button1,0,0,1,1);
+    gtk_grid_attach(GTK_GRID(grid),button2,0,1,1,1);
+    g_signal_connect(button1,"clicked",G_CALLBACK(On_Clicked_Button1),grid);
+    g_signal_connect(button2,"clicked",G_CALLBACK(On_Clicked_Button2),grid);
+}
+void Make_Window()
 {
     GtkWidget* window;
+    GtkWidget* scrolled_window;
+    GtkWidget* grid;
+    grid=gtk_grid_new();
+    scrolled_window=gtk_scrolled_window_new(NULL,NULL);
+    gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),GTK_POLICY_AUTOMATIC, GTK_POLICY_ALWAYS);
     window=gtk_window_new(GTK_WINDOW_TOPLEVEL);
     gtk_window_set_title(GTK_WINDOW(window),"Expensometer");
     gtk_window_set_position(GTK_WINDOW(window),GTK_WIN_POS_CENTER);
     gtk_window_set_default_size(GTK_WINDOW(window), 600, 450);
-    g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(gtk_main_quit),NULL);
-    EntryTextBox(window);
-    gtk_widget_show(window);
+    g_signal_connect(G_OBJECT(window),"destroy",G_CALLBACK(Close_App),NULL);
+    
+    Open_App(grid);
+    Make_Buttons(grid);
+    
+    gtk_container_add(GTK_CONTAINER(scrolled_window),grid);
+    gtk_container_add(GTK_CONTAINER(window),scrolled_window);
+    gtk_widget_show_all(window);
 }
-
 int main(int argc,char* argv[])
 {
-   
+    months=Write_From_File();
     gtk_init(&argc,&argv);
-    MakeWindow();
+    Make_Window();
     gtk_main();
     return 0;
 }
