@@ -41,10 +41,10 @@ Month should be in format mm-yyyy.
 In order to change expenses formula activate desired field by clicking it with mouse and click enter in order to
 show the full formula. 
 For example:
-60 
-ENTER
-=10+10+10+10+20
-ENTER
+60, 
+ENTER,
+=10+10+10+10+20,
+ENTER,
 60
 
 When you been using expensometer for over a month and want to continue on with financial responsibility journey
